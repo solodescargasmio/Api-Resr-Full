@@ -2,8 +2,14 @@ package com.books.integrate.spring.react.controller;
 
 import java.util.*;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
 import com.books.integrate.spring.react.model.Tutorial;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,17 +65,42 @@ public class TutorialController {
 		}
 	}
 
+	@GetMapping("/tutorials/{title}")
+	public ResponseEntity<List<Tutorial>> getTutorialByTitles(@PathVariable("title") String title) {
+		try {
+			List<Tutorial> tutorials = tutorialRepository.findByTitleContaining(title);
+
+			if (tutorials.isEmpty()) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+			return new ResponseEntity<>(tutorials, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+		}
+	}
+
+ 	@PostMapping("")
+	public String actualizarTutorials(@RequestParam String description,@RequestParam Boolean published,@RequestParam String title) {	
+	try {
+			tutorialRepository.actTutorial(description, published,title); 
+			return "TUTORIAL ACTUALIZADO CON EXITO"+description+"   "+title;
+		} catch (Exception e) {
+			return "ERROR AL ACTUALIZAR TUTORIAL "+e.getMessage();
+		}
+	}
+
 
 	@PostMapping("/tutorials")
-	public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
-		try {
-			Tutorial _tutorial = tutorialRepository
-					.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(),  false));
+	public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {	
+	try {
+			Tutorial _tutorial = tutorialRepository.save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(),  false));
 			return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
 		}
 	}
+
+
 
 	@PutMapping("/tutorials/{id}")
 	public ResponseEntity<Tutorial> updateTutorial(@PathVariable("id") long id, @RequestBody Tutorial tutorial) {
@@ -94,6 +125,21 @@ public class TutorialController {
 				return new ResponseEntity<>("Tutorials DELETE!! ",HttpStatus.NO_CONTENT);
 			} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+		}
+	}
+
+	@DeleteMapping("/{title}")
+	public String  deleteTutorialPorTitle(@PathVariable String title) throws Exception{
+	
+		try {
+			List<Tutorial> tutos=tutorialRepository.findByTitleContaining(title);
+			for (Tutorial tutorial : tutos) {
+				tutorialRepository.deleteById(tutorial.getId());
+			}
+			
+				return "Tutorials DELETE!! ";
+			} catch (Exception e) {
+			return "ERROR AL BORRAR TUTORIAL";
 		}
 	}
 
