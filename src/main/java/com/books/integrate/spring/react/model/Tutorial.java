@@ -19,6 +19,9 @@ public class Tutorial {
 	@Column(name = "published")
 	private boolean published;
 
+	@Column(name = "precio")
+	private double precio;
+
 	public Tutorial() {
 
 	}
@@ -28,6 +31,8 @@ public class Tutorial {
 		this.description = description;
 		this.published = published;
 	}
+
+	
 
 	public long getId() {
 		return id;
@@ -63,5 +68,27 @@ public class Tutorial {
 	public String toString() {
 		return "Tutorial [id=" + id + ", title=" + title + ", desc=" + description + ", published=" + published + "]";
 	}
+
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return double return the precio
+     */
+    public double getPrecio() {
+        return precio;
+    }
+
+    /**
+     * @param precio the precio to set
+     */
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
 
 }

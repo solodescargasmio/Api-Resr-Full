@@ -65,6 +65,36 @@ public class TutorialController {
 		}
 	}
 
+	@GetMapping("/tutorials/precio/{id}")
+	public String getPrecioPorId(@PathVariable("id") Integer id) {
+		//Optional<Tutorial> tutorialData = tutorialRepository.findById(id);
+		
+		try {
+			Double precio= tutorialRepository.consultaPrecio(id);
+			if(precio>0){
+				return "El precio del curso es de "+precio;
+			}else{
+				return "El tutorial no tiene precio asignado";
+			}
+		} catch (Exception e) {
+			return "TUTORIAL NO EXISTE";
+		}
+	}
+
+	@GetMapping("/tutorials/precio/")
+	public ResponseEntity<List<String>> getPrecioPorTitle(@RequestParam String title) {
+		try {
+			List<Tutorial> tutoriales = tutorialRepository.consultarPrecioPorTitulo(title);
+			List<String> lista=new ArrayList<String>();
+			for (Tutorial tutos : tutoriales) {
+				lista.add("El tutorial con id "+tutos.getId()+" tiene un precio de "+tutos.getPrecio());
+			}
+			return new ResponseEntity<>(lista,HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
 	@GetMapping("/tutorials/{title}")
 	public ResponseEntity<List<Tutorial>> getTutorialByTitles(@PathVariable("title") String title) {
 		try {
